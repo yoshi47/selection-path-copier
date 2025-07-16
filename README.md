@@ -12,12 +12,21 @@ A Visual Studio Code extension that copies file paths with line numbers in GitHu
 ## Usage
 
 1. Select code in the editor
-2. Use one of the following commands:
-   - **Command Palette** (`Cmd/Ctrl+Shift+P`):
+2. Use one of the following methods:
+
+### Keyboard Shortcuts
+   - **Copy Path**: `Cmd+Alt+C` (Mac) / `Ctrl+Alt+C` (Windows/Linux)
+   - **Copy Path with Code**: `Cmd+Alt+Shift+C` (Mac) / `Ctrl+Alt+Shift+C` (Windows/Linux)
+
+### Command Palette
+   - Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
+   - Search for:
      - `Selection Path Copier: Copy Path` - Copies path with line numbers
      - `Selection Path Copier: Copy Path with Code` - Copies path and selected code
-   - **Context Menu**: Right-click on selected text (coming soon)
-   - **Keyboard Shortcuts**: Configure your own shortcuts in VS Code
+
+### Context Menu
+   - Right-click on selected text
+   - Choose from the copy options in the context menu
 
 ### Example Output
 
