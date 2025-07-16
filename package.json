@@ -3,47 +3,99 @@
   "displayName": "Selection Path Copier",
   "description": "Copy GitHub-style path format with line numbers for selected code",
   "version": "0.0.1",
+  "publisher": "yoshi47",
   "engines": {
     "vscode": "^1.102.0"
   },
-  "categories": [
-    "Other"
+  "categories": ["Other"],
+  "keywords": [
+    "path",
+    "copy",
+    "github",
+    "line",
+    "selection",
+    "reference",
+    "clipboard",
+    "productivity",
+    "utility",
+    "permalink"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yoshi47/selection-path-copier"
+  },
+  "bugs": {
+    "url": "https://github.com/yoshi47/selection-path-copier/issues"
+  },
+  "homepage": "https://github.com/yoshi47/selection-path-copier#readme",
+  "license": "MIT",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
   "activationEvents": [],
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "selection-path-copier.helloWorld",
-        "title": "Hello World"
+        "command": "selection-path-copier.copyPath",
+        "title": "Copy Path",
+        "category": "Selection Path Copier"
+      },
+      {
+        "command": "selection-path-copier.copyPathWithCode",
+        "title": "Copy Path with Code",
+        "category": "Selection Path Copier"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "selection-path-copier.copyPath",
+        "key": "ctrl+alt+c",
+        "mac": "cmd+alt+c",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "selection-path-copier.copyPathWithCode",
+        "key": "ctrl+alt+shift+c",
+        "mac": "cmd+alt+shift+c",
+        "when": "editorHasSelection"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorHasSelection",
+          "command": "selection-path-copier.copyPath",
+          "group": "9_cutcopypaste@3"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "selection-path-copier.copyPathWithCode",
+          "group": "9_cutcopypaste@4"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Selection Path Copier",
+      "properties": {
+        "selection-path-copier.pathType": {
+          "type": "string",
+          "enum": ["relative", "absolute"],
+          "default": "relative",
+          "description": "Choose between relative path (from workspace root) or absolute path"
+        }
+      }
+    }
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "npm run check-types && npm run lint && node esbuild.js",
-    "watch": "npm-run-all -p watch:*",
-    "watch:esbuild": "node esbuild.js --watch",
-    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "npm run check-types && npm run lint && node esbuild.js --production",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "check-types": "tsc --noEmit",
-    "lint": "eslint src",
-    "test": "vscode-test"
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/vscode": "^1.102.0",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
-    "@typescript-eslint/eslint-plugin": "^8.31.1",
-    "@typescript-eslint/parser": "^8.31.1",
-    "eslint": "^9.25.1",
-    "esbuild": "^0.25.3",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.8.3",
-    "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2"
+    "@types/node": "^17.0.33",
+    "@types/vscode": "^1.57.0",
+    "typescript": "^5.0.4"
   }
 }
