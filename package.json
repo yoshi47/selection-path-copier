@@ -2,13 +2,15 @@
   "name": "selection-path-copier",
   "displayName": "Selection Path Copier",
   "description": "Copy GitHub-style path format with line numbers for selected code",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "yoshi47",
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.74.0"
   },
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "keywords": [
     "path",
     "copy",
@@ -82,7 +84,10 @@
       "properties": {
         "selection-path-copier.pathType": {
           "type": "string",
-          "enum": ["relative", "absolute"],
+          "enum": [
+            "relative",
+            "absolute"
+          ],
           "default": "relative",
           "description": "Choose between relative path (from workspace root) or absolute path"
         }
