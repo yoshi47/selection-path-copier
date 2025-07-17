@@ -2,7 +2,7 @@
   "name": "selection-path-copier",
   "displayName": "Selection Path Copier",
   "description": "Copy GitHub-style path format with line numbers for selected code",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "yoshi47",
   "icon": "icon.png",
   "engines": {
