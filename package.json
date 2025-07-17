@@ -6,7 +6,7 @@
   "publisher": "yoshi47",
   "icon": "icon.png",
   "engines": {
-    "vscode": "^1.102.0"
+    "vscode": "^1.74.0"
   },
   "categories": ["Other"],
   "keywords": [
