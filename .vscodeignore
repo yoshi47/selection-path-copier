@@ -3,3 +3,9 @@
 **/jsconfig.json
 src/
 tsconfig.json
+node_modules/
+**/*.ts
+**/*.map
+.git/**
+package-lock.json
+*.vsix
