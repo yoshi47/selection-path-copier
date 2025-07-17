@@ -2,8 +2,9 @@
   "name": "selection-path-copier",
   "displayName": "Selection Path Copier",
   "description": "Copy GitHub-style path format with line numbers for selected code",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "publisher": "yoshi47",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.102.0"
   },
