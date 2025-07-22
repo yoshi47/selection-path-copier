@@ -1,8 +1,8 @@
 {
   "name": "selection-path-copier",
   "displayName": "Selection Path Copier",
-  "description": "Copy GitHub-style path format with line numbers for selected code",
-  "version": "1.0.3",
+  "description": "Copy GitHub-style file paths with line numbers for selected text or cursor position",
+  "version": "1.1.0",
   "publisher": "yoshi47",
   "icon": "icon.png",
   "engines": {
@@ -55,25 +55,21 @@
       {
         "command": "selection-path-copier.copyPath",
         "key": "ctrl+alt+c",
-        "mac": "cmd+alt+c",
-        "when": "editorHasSelection"
+        "mac": "cmd+alt+c"
       },
       {
         "command": "selection-path-copier.copyPathWithCode",
         "key": "ctrl+alt+shift+c",
-        "mac": "cmd+alt+shift+c",
-        "when": "editorHasSelection"
+        "mac": "cmd+alt+shift+c"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "when": "editorHasSelection",
           "command": "selection-path-copier.copyPath",
           "group": "9_cutcopypaste@3"
         },
         {
-          "when": "editorHasSelection",
           "command": "selection-path-copier.copyPathWithCode",
           "group": "9_cutcopypaste@4"
         }

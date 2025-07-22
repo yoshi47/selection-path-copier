@@ -23,13 +23,8 @@ async function copySelectionPath(includeCode: boolean) {
 		return;
 	}
 
-	const selection = editor.selection;
-	if (selection.isEmpty) {
-		vscode.window.showErrorMessage('No text selected');
-		return;
-	}
-
 	const document = editor.document;
+	const selection = editor.selection;
 	const filePath = document.fileName;
 	
 	const config = vscode.workspace.getConfiguration('selection-path-copier');
@@ -49,21 +44,39 @@ async function copySelectionPath(includeCode: boolean) {
 		displayPath = filePath;
 	}
 
-	const startLine = selection.start.line + 1;
-	const endLine = selection.end.line + 1;
-	
-	let lineReference: string;
-	if (startLine === endLine) {
-		lineReference = `#L${startLine}`;
+	let lineReference = '';
+	let codeContent = '';
+
+	if (selection.isEmpty) {
+		const cursorPosition = editor.selection.active;
+		const lineNumber = cursorPosition.line + 1;
+		const lineText = document.lineAt(cursorPosition.line).text;
+		
+		if (lineText.trim() !== '') {
+			lineReference = `#L${lineNumber}`;
+			if (includeCode) {
+				codeContent = lineText;
+			}
+		}
 	} else {
-		lineReference = `#L${startLine}-${endLine}`;
+		const startLine = selection.start.line + 1;
+		const endLine = selection.end.line + 1;
+		
+		if (startLine === endLine) {
+			lineReference = `#L${startLine}`;
+		} else {
+			lineReference = `#L${startLine}-${endLine}`;
+		}
+		
+		if (includeCode) {
+			codeContent = document.getText(selection);
+		}
 	}
 
 	let clipboardContent = `${displayPath}${lineReference}`;
 	
-	if (includeCode) {
-		const selectedText = document.getText(selection);
-		clipboardContent = `${clipboardContent}\n${selectedText}`;
+	if (includeCode && codeContent) {
+		clipboardContent = `${clipboardContent}\n${codeContent}`;
 	}
 
 	await vscode.env.clipboard.writeText(clipboardContent);
