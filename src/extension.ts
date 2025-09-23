@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(copyPathCommand, copyPathWithCodeCommand);
 }
 
-function formatLineNumber(startLine: number, endLine: number | undefined, format: string): string {
+export function formatLineNumber(startLine: number, endLine: number | undefined, format: string): string {
 	switch (format) {
 		case 'editor':
 			// Editor format: file.ts:10 or file.ts:10-20
