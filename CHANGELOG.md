@@ -9,6 +9,9 @@ All notable changes to the "Selection Path Copier" extension will be documented 
   - Editor format (file.ts:10)
   - Parentheses format (file.ts(10))
   - GitHub format remains as default
+- New code format option for "Copy Path with Code":
+  - Plain text format (default)
+  - Markdown code block format with syntax highlighting
 
 ## [1.1.1] - 2025-01-23
 

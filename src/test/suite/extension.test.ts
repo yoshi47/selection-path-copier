@@ -78,6 +78,12 @@ suite('Extension Test Suite', () => {
 			const lineNumberFormat = config.get<string>('lineNumberFormat');
 			assert.strictEqual(lineNumberFormat, 'github');
 		});
+
+		test('codeFormat configuration should have correct default', () => {
+			const config = vscode.workspace.getConfiguration('selection-path-copier');
+			const codeFormat = config.get<string>('codeFormat');
+			assert.strictEqual(codeFormat, 'plain');
+		});
 	});
 
 	suite('Integration Tests', () => {
@@ -157,6 +163,40 @@ suite('Extension Test Suite', () => {
 			assert.ok(clipboardContent.includes('#L1') ||
 					  clipboardContent.includes(':1') ||
 					  clipboardContent.includes('(1)'));
+		});
+
+		test('Copy path with code in markdown format should include code block', async () => {
+			// Update config to use markdown format
+			await vscode.workspace.getConfiguration('selection-path-copier')
+				.update('codeFormat', 'markdown', vscode.ConfigurationTarget.Global);
+
+			// Create a new text document
+			const document = await vscode.workspace.openTextDocument({
+				content: 'const test = 123;',
+				language: 'typescript'
+			});
+
+			const editor = await vscode.window.showTextDocument(document);
+
+			// Select all text
+			const start = new vscode.Position(0, 0);
+			const end = new vscode.Position(0, 17);
+			editor.selection = new vscode.Selection(start, end);
+
+			// Execute the command
+			await vscode.commands.executeCommand('selection-path-copier.copyPathWithCode');
+
+			// Get clipboard content
+			const clipboardContent = await vscode.env.clipboard.readText();
+
+			// Check that clipboard contains markdown code block
+			assert.ok(clipboardContent.includes('```typescript'));
+			assert.ok(clipboardContent.includes('const test = 123;'));
+			assert.ok(clipboardContent.includes('```'));
+
+			// Reset config
+			await vscode.workspace.getConfiguration('selection-path-copier')
+				.update('codeFormat', 'plain', vscode.ConfigurationTarget.Global);
 		});
 	});
 });

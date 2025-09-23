@@ -58,6 +58,7 @@ async function copySelectionPath(includeCode: boolean) {
 	const pathType = config.get<string>('pathType', 'relative');
 	const includeBlankLine = config.get<boolean>('includeBlankLine', true);
 	const lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
+	const codeFormat = config.get<string>('codeFormat', 'plain');
 	
 	let displayPath: string;
 	
@@ -106,7 +107,14 @@ async function copySelectionPath(includeCode: boolean) {
 
 	if (includeCode && codeContent) {
 		const lineSeparator = includeBlankLine ? '\n\n' : '\n';
-		clipboardContent = `${clipboardContent}${lineSeparator}${codeContent}`;
+
+		if (codeFormat === 'markdown') {
+			// Get language ID from document
+			const languageId = document.languageId;
+			clipboardContent = `${clipboardContent}${lineSeparator}\`\`\`${languageId}\n${codeContent}\n\`\`\``;
+		} else {
+			clipboardContent = `${clipboardContent}${lineSeparator}${codeContent}`;
+		}
 	}
 
 	await vscode.env.clipboard.writeText(clipboardContent);

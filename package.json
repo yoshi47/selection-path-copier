@@ -106,6 +106,19 @@
             "Parentheses format: file.ts(10) or file.ts(10-20)"
           ],
           "description": "Choose the line number reference format"
+        },
+        "selection-path-copier.codeFormat": {
+          "type": "string",
+          "enum": [
+            "plain",
+            "markdown"
+          ],
+          "default": "plain",
+          "enumDescriptions": [
+            "Plain text format",
+            "Markdown code block with syntax highlighting"
+          ],
+          "description": "Choose the code format when copying with code"
         }
       }
     }

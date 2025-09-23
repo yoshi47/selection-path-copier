@@ -9,6 +9,7 @@ A Visual Studio Code extension that copies file paths with line numbers in vario
   - Copies path with cursor line number
   - On empty lines, copies just the file path without line number
 - **Copy Path with Code**: Copy both the file path reference and the code content
+- **Markdown Code Blocks**: Option to wrap code in markdown code blocks with syntax highlighting
 - **Relative or Absolute Paths**: Configure whether to use relative paths (from workspace root) or absolute paths
 - **Multi-line Selection Support**: Automatically formats single line or range references
 - **Multiple Format Options**: GitHub, Editor, and Parentheses formats
@@ -55,7 +56,7 @@ src/components/Header.tsx:25-30
 src/components/Header.tsx(25-30)
 ```
 
-**Copy Path with Code (GitHub format):**
+**Copy Path with Code (Plain format):**
 ```
 src/components/Header.tsx#L25-30
 
@@ -67,6 +68,21 @@ export const Header: React.FC = () => {
   );
 }
 ```
+
+**Copy Path with Code (Markdown format):**
+````
+src/components/Header.tsx#L25-30
+
+```typescript
+export const Header: React.FC = () => {
+  return (
+    <header className="main-header">
+      <h1>Welcome</h1>
+    </header>
+  );
+}
+```
+````
 
 ## Extension Settings
 
@@ -84,3 +100,7 @@ This extension contributes the following settings:
   - `"github"` (default): GitHub format (e.g., `file.ts#L10` or `file.ts#L10-20`)
   - `"editor"`: Editor format (e.g., `file.ts:10` or `file.ts:10-20`)
   - `"parentheses"`: Parentheses format (e.g., `file.ts(10)` or `file.ts(10-20)`)
+
+* `selection-path-copier.codeFormat`: Choose the code format when copying with code
+  - `"plain"` (default): Plain text format
+  - `"markdown"`: Markdown code block with syntax highlighting
