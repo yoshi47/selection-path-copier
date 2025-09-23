@@ -1,16 +1,17 @@
 # Selection Path Copier
 
-A Visual Studio Code extension that copies file paths with line numbers in GitHub-style format. Works with both selected text and cursor position.
+A Visual Studio Code extension that copies file paths with line numbers in various formats (GitHub, Editor, Parentheses). Works with both selected text and cursor position.
 
 ## Features
 
 - **Copy Path with Line Numbers**: Copy file path with line numbers for selected text or cursor position
 - **Smart Cursor Handling**: When no text is selected:
-  - Copies path with cursor line number (e.g., `src/main.ts#L10`)
+  - Copies path with cursor line number
   - On empty lines, copies just the file path without line number
 - **Copy Path with Code**: Copy both the file path reference and the code content
 - **Relative or Absolute Paths**: Configure whether to use relative paths (from workspace root) or absolute paths
-- **Multi-line Selection Support**: Automatically formats single line (`#L10`) or range (`#L10-15`) references
+- **Multi-line Selection Support**: Automatically formats single line or range references
+- **Multiple Format Options**: GitHub, Editor, and Parentheses formats
 
 ## Usage
 
@@ -39,24 +40,25 @@ A Visual Studio Code extension that copies file paths with line numbers in GitHu
 
 ### Example Output
 
-**Copy Path (with selection):**
+**GitHub Format (default):**
 ```
 src/components/Header.tsx#L25-30
 ```
 
-**Copy Path (cursor on line 25, no selection):**
+**Editor Format:**
 ```
-src/components/Header.tsx#L25
-```
-
-**Copy Path (cursor on empty line):**
-```
-src/components/Header.tsx
+src/components/Header.tsx:25-30
 ```
 
-**Copy Path with Code:**
+**Parentheses Format:**
+```
+src/components/Header.tsx(25-30)
+```
+
+**Copy Path with Code (GitHub format):**
 ```
 src/components/Header.tsx#L25-30
+
 export const Header: React.FC = () => {
   return (
     <header className="main-header">
@@ -77,3 +79,8 @@ This extension contributes the following settings:
 * `selection-path-copier.includeBlankLine`: Control blank line when copying with code
   - `true` (default): Include a blank line between path and code
   - `false`: No blank line between path and code
+
+* `selection-path-copier.lineNumberFormat`: Choose the line number reference format
+  - `"github"` (default): GitHub format (e.g., `file.ts#L10` or `file.ts#L10-20`)
+  - `"editor"`: Editor format (e.g., `file.ts:10` or `file.ts:10-20`)
+  - `"parentheses"`: Parentheses format (e.g., `file.ts(10)` or `file.ts(10-20)`)

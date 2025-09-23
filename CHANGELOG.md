@@ -2,6 +2,14 @@
 
 All notable changes to the "Selection Path Copier" extension will be documented in this file.
 
+## [1.2.0] - 2025-01-23
+
+### Added
+- New line number format options:
+  - Editor format (file.ts:10)
+  - Parentheses format (file.ts(10))
+  - GitHub format remains as default
+
 ## [1.1.1] - 2025-01-23
 
 ### Added

@@ -15,6 +15,33 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(copyPathCommand, copyPathWithCodeCommand);
 }
 
+function formatLineNumber(startLine: number, endLine: number | undefined, format: string): string {
+	switch (format) {
+		case 'editor':
+			// Editor format: file.ts:10 or file.ts:10-20
+			if (endLine === undefined) {
+				return `:${startLine}`;
+			} else {
+				return `:${startLine}-${endLine}`;
+			}
+		case 'parentheses':
+			// Parentheses format: file.ts(10) or file.ts(10-20)
+			if (endLine === undefined) {
+				return `(${startLine})`;
+			} else {
+				return `(${startLine}-${endLine})`;
+			}
+		case 'github':
+		default:
+			// GitHub format: file.ts#L10 or file.ts#L10-20
+			if (endLine === undefined) {
+				return `#L${startLine}`;
+			} else {
+				return `#L${startLine}-${endLine}`;
+			}
+	}
+}
+
 async function copySelectionPath(includeCode: boolean) {
 	const editor = vscode.window.activeTextEditor;
 	
@@ -30,6 +57,7 @@ async function copySelectionPath(includeCode: boolean) {
 	const config = vscode.workspace.getConfiguration('selection-path-copier');
 	const pathType = config.get<string>('pathType', 'relative');
 	const includeBlankLine = config.get<boolean>('includeBlankLine', true);
+	const lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
 	
 	let displayPath: string;
 	
@@ -52,9 +80,9 @@ async function copySelectionPath(includeCode: boolean) {
 		const cursorPosition = editor.selection.active;
 		const lineNumber = cursorPosition.line + 1;
 		const lineText = document.lineAt(cursorPosition.line).text;
-		
+
 		if (lineText.trim() !== '') {
-			lineReference = `#L${lineNumber}`;
+			lineReference = formatLineNumber(lineNumber, undefined, lineNumberFormat);
 			if (includeCode) {
 				codeContent = lineText;
 			}
@@ -62,13 +90,13 @@ async function copySelectionPath(includeCode: boolean) {
 	} else {
 		const startLine = selection.start.line + 1;
 		const endLine = selection.end.line + 1;
-		
+
 		if (startLine === endLine) {
-			lineReference = `#L${startLine}`;
+			lineReference = formatLineNumber(startLine, undefined, lineNumberFormat);
 		} else {
-			lineReference = `#L${startLine}-${endLine}`;
+			lineReference = formatLineNumber(startLine, endLine, lineNumberFormat);
 		}
-		
+
 		if (includeCode) {
 			codeContent = document.getText(selection);
 		}

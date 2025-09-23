@@ -2,7 +2,7 @@
   "name": "selection-path-copier",
   "displayName": "Selection Path Copier",
   "description": "Copy GitHub-style file paths with line numbers for selected text or cursor position",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "publisher": "yoshi47",
   "icon": "icon.png",
   "engines": {
@@ -91,6 +91,21 @@
           "type": "boolean",
           "default": true,
           "description": "Include a blank line between path and code when copying"
+        },
+        "selection-path-copier.lineNumberFormat": {
+          "type": "string",
+          "enum": [
+            "github",
+            "editor",
+            "parentheses"
+          ],
+          "default": "github",
+          "enumDescriptions": [
+            "GitHub format: file.ts#L10 or file.ts#L10-20",
+            "Editor format: file.ts:10 or file.ts:10-20",
+            "Parentheses format: file.ts(10) or file.ts(10-20)"
+          ],
+          "description": "Choose the line number reference format"
         }
       }
     }
