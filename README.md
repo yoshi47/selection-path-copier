@@ -73,3 +73,7 @@ This extension contributes the following settings:
 * `selection-path-copier.pathType`: Choose between path types
   - `"relative"` (default): Use relative paths from workspace root
   - `"absolute"`: Use absolute file paths
+
+* `selection-path-copier.includeBlankLine`: Control blank line when copying with code
+  - `true` (default): Include a blank line between path and code
+  - `false`: No blank line between path and code

@@ -2,6 +2,11 @@
 
 All notable changes to the "Selection Path Copier" extension will be documented in this file.
 
+## [1.1.1] - 2025-01-23
+
+### Added
+- New configuration option `includeBlankLine` to control whether to include a blank line between path and code when using "Copy Path with Code"
+
 ## [1.1.0] - 2025-01-22
 
 ### Added

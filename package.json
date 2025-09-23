@@ -2,7 +2,7 @@
   "name": "selection-path-copier",
   "displayName": "Selection Path Copier",
   "description": "Copy GitHub-style file paths with line numbers for selected text or cursor position",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "publisher": "yoshi47",
   "icon": "icon.png",
   "engines": {
@@ -86,6 +86,11 @@
           ],
           "default": "relative",
           "description": "Choose between relative path (from workspace root) or absolute path"
+        },
+        "selection-path-copier.includeBlankLine": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include a blank line between path and code when copying"
         }
       }
     }

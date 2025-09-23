@@ -29,6 +29,7 @@ async function copySelectionPath(includeCode: boolean) {
 	
 	const config = vscode.workspace.getConfiguration('selection-path-copier');
 	const pathType = config.get<string>('pathType', 'relative');
+	const includeBlankLine = config.get<boolean>('includeBlankLine', true);
 	
 	let displayPath: string;
 	
@@ -74,9 +75,10 @@ async function copySelectionPath(includeCode: boolean) {
 	}
 
 	let clipboardContent = `${displayPath}${lineReference}`;
-	
+
 	if (includeCode && codeContent) {
-		clipboardContent = `${clipboardContent}\n${codeContent}`;
+		const lineSeparator = includeBlankLine ? '\n\n' : '\n';
+		clipboardContent = `${clipboardContent}${lineSeparator}${codeContent}`;
 	}
 
 	await vscode.env.clipboard.writeText(clipboardContent);
