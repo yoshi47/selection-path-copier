@@ -9,6 +9,7 @@ A Visual Studio Code extension that copies file paths with line numbers in vario
   - Copies path with cursor line number
   - On empty lines, copies just the file path without line number
 - **Copy Path with Code**: Copy both the file path reference and the code content
+- **Copy GitHub Permalink**: Generate permanent GitHub links using commit hash for stable references
 - **Markdown Code Blocks**: Option to wrap code in markdown code blocks with syntax highlighting
 - **Relative or Absolute Paths**: Configure whether to use relative paths (from workspace root) or absolute paths
 - **Multi-line Selection Support**: Automatically formats single line or range references
@@ -28,12 +29,16 @@ A Visual Studio Code extension that copies file paths with line numbers in vario
 ### Keyboard Shortcuts
    - **Copy Path**: `Cmd+Alt+C` (Mac) / `Ctrl+Alt+C` (Windows/Linux)
    - **Copy Path with Code**: `Cmd+Alt+Shift+C` (Mac) / `Ctrl+Alt+Shift+C` (Windows/Linux)
+   - **Copy GitHub Permalink**: `Cmd+Alt+P` (Mac) / `Ctrl+Alt+P` (Windows/Linux)
+   - **Copy GitHub Permalink with Code**: `Cmd+Alt+Shift+P` (Mac) / `Ctrl+Alt+Shift+P` (Windows/Linux)
 
 ### Command Palette
    - Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux)
    - Search for:
      - `Selection Path Copier: Copy Path` - Copies path with line numbers
      - `Selection Path Copier: Copy Path with Code` - Copies path and selected code
+     - `Selection Path Copier: Copy GitHub Permalink` - Copies GitHub permalink with commit hash
+     - `Selection Path Copier: Copy GitHub Permalink with Code` - Copies GitHub permalink with commit hash and code
 
 ### Context Menu
    - Right-click on selected text
@@ -54,6 +59,29 @@ src/components/Header.tsx:25-30
 **Parentheses Format:**
 ```
 src/components/Header.tsx(25-30)
+```
+
+**GitHub Permalink (commit hash - default):**
+```
+https://github.com/yoshi47/my-project/blob/e3873f70720c00e07f9b202a97367ab460f8051f/src/components/Header.tsx#L25-L30
+```
+
+**GitHub Permalink (branch name):**
+```
+https://github.com/yoshi47/my-project/blob/main/src/components/Header.tsx#L25-L30
+```
+
+**GitHub Permalink with Code:**
+```
+https://github.com/yoshi47/my-project/blob/e3873f70720c00e07f9b202a97367ab460f8051f/src/components/Header.tsx#L25-L30
+
+export const Header: React.FC = () => {
+  return (
+    <header className="main-header">
+      <h1>Welcome</h1>
+    </header>
+  );
+}
 ```
 
 **Copy Path with Code (Plain format):**
@@ -104,3 +132,7 @@ This extension contributes the following settings:
 * `selection-path-copier.codeFormat`: Choose the code format when copying with code
   - `"plain"` (default): Plain text format
   - `"markdown"`: Markdown code block with syntax highlighting
+
+* `selection-path-copier.githubPermalinkType`: Choose permalink reference type
+  - `"commit"` (default): Use commit hash for permanent reference (e.g., `/blob/abc123...`)
+  - `"branch"`: Use default branch name (e.g., `/blob/main` or `/blob/master`)

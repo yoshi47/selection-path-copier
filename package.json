@@ -2,7 +2,7 @@
   "name": "selection-path-copier",
   "displayName": "Selection Path Copier",
   "description": "Copy GitHub-style file paths with line numbers for selected text or cursor position",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "publisher": "yoshi47",
   "icon": "icon.png",
   "engines": {
@@ -49,6 +49,16 @@
         "command": "selection-path-copier.copyPathWithCode",
         "title": "Copy Path with Code",
         "category": "Selection Path Copier"
+      },
+      {
+        "command": "selection-path-copier.copyGithubPermalink",
+        "title": "Copy GitHub Permalink",
+        "category": "Selection Path Copier"
+      },
+      {
+        "command": "selection-path-copier.copyGithubPermalinkWithCode",
+        "title": "Copy GitHub Permalink with Code",
+        "category": "Selection Path Copier"
       }
     ],
     "keybindings": [
@@ -61,6 +71,16 @@
         "command": "selection-path-copier.copyPathWithCode",
         "key": "ctrl+alt+shift+c",
         "mac": "cmd+alt+shift+c"
+      },
+      {
+        "command": "selection-path-copier.copyGithubPermalink",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p"
+      },
+      {
+        "command": "selection-path-copier.copyGithubPermalinkWithCode",
+        "key": "ctrl+alt+shift+p",
+        "mac": "cmd+alt+shift+p"
       }
     ],
     "menus": {
@@ -72,6 +92,14 @@
         {
           "command": "selection-path-copier.copyPathWithCode",
           "group": "9_cutcopypaste@4"
+        },
+        {
+          "command": "selection-path-copier.copyGithubPermalink",
+          "group": "9_cutcopypaste@5"
+        },
+        {
+          "command": "selection-path-copier.copyGithubPermalinkWithCode",
+          "group": "9_cutcopypaste@6"
         }
       ]
     },
@@ -119,6 +147,19 @@
             "Markdown code block with syntax highlighting"
           ],
           "description": "Choose the code format when copying with code"
+        },
+        "selection-path-copier.githubPermalinkType": {
+          "type": "string",
+          "enum": [
+            "commit",
+            "branch"
+          ],
+          "default": "commit",
+          "enumDescriptions": [
+            "Use commit hash for permanent reference (e.g., /blob/abc123...)",
+            "Use default branch name (e.g., /blob/main or /blob/master)"
+          ],
+          "description": "Choose whether GitHub permalinks use commit hash or branch name"
         }
       }
     }

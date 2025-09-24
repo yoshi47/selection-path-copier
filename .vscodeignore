@@ -1,4 +1,5 @@
 .vscode/**
+.vscode-test/**
 .gitignore
 **/jsconfig.json
 src/
@@ -9,3 +10,5 @@ node_modules/
 .git/**
 package-lock.json
 *.vsix
+out/test/**
+src/test/**

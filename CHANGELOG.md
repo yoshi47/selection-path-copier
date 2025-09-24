@@ -2,6 +2,22 @@
 
 All notable changes to the "Selection Path Copier" extension will be documented in this file.
 
+## [1.3.0] - 2025-09-24
+
+### Added
+- GitHub Permalink feature - copies permanent GitHub links
+  - `Copy GitHub Permalink` command (Cmd+Alt+P / Ctrl+Alt+P)
+  - `Copy GitHub Permalink with Code` command (Cmd+Alt+Shift+P / Ctrl+Alt+Shift+P)
+- New configuration option `githubPermalinkType` to choose between:
+  - `commit` (default): Use commit hash for truly permanent references
+  - `branch`: Use default branch name (main/master) for always-current references
+- Automatic detection of default branch (main/master)
+- Support for both SSH and HTTPS GitHub remote URLs
+- Permalink formats:
+  - Commit: `https://github.com/owner/repo/blob/{commit}/{file}#L{line}`
+  - Branch: `https://github.com/owner/repo/blob/{branch}/{file}#L{line}`
+- Code can be included with permalinks using existing format settings
+
 ## [1.2.0] - 2025-01-23
 
 ### Added
