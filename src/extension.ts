@@ -123,7 +123,9 @@ async function copySelectionPath(includeCode: boolean) {
 		if (codeFormat === 'markdown') {
 			// Get language ID from document
 			const languageId = document.languageId;
-			clipboardContent = `${clipboardContent}${lineSeparator}\`\`\`${languageId}\n${codeContent}\n\`\`\``;
+			// Remove trailing newline from code content if present
+			const trimmedCode = codeContent.endsWith('\n') ? codeContent.slice(0, -1) : codeContent;
+			clipboardContent = `${clipboardContent}${lineSeparator}\`\`\`${languageId}\n${trimmedCode}\n\`\`\``;
 		} else {
 			clipboardContent = `${clipboardContent}${lineSeparator}${codeContent}`;
 		}
@@ -297,7 +299,9 @@ async function copyGithubPermalink(includeCode: boolean) {
 
 		if (codeFormat === 'markdown') {
 			const languageId = document.languageId;
-			clipboardContent = `${permalinkUrl}${lineSeparator}\`\`\`${languageId}\n${codeContent}\n\`\`\``;
+			// Remove trailing newline from code content if present
+			const trimmedCode = codeContent.endsWith('\n') ? codeContent.slice(0, -1) : codeContent;
+			clipboardContent = `${permalinkUrl}${lineSeparator}\`\`\`${languageId}\n${trimmedCode}\n\`\`\``;
 		} else {
 			clipboardContent = `${permalinkUrl}${lineSeparator}${codeContent}`;
 		}
