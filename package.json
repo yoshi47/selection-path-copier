@@ -1,8 +1,8 @@
 {
   "name": "selection-path-copier",
   "displayName": "Selection Path Copier",
-  "description": "Copy GitHub-style file paths with line numbers for selected text or cursor position",
-  "version": "1.3.0",
+  "description": "Copy file paths with line numbers, code snippets, and GitHub permalinks in multiple formats",
+  "version": "1.3.1",
   "publisher": "yoshi47",
   "icon": "icon.png",
   "engines": {

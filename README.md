@@ -1,6 +1,6 @@
 # Selection Path Copier
 
-A Visual Studio Code extension that copies file paths with line numbers in various formats (GitHub, Editor, Parentheses). Works with both selected text and cursor position.
+A Visual Studio Code extension that copies file paths with line numbers, code snippets, and GitHub permalinks. Supports multiple formats (GitHub, Editor, Parentheses) and works with both selected text and cursor position.
 
 ## Features
 

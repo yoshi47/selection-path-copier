@@ -2,6 +2,11 @@
 
 All notable changes to the "Selection Path Copier" extension will be documented in this file.
 
+## [1.3.1] - 2025-10-17
+
+### Changed
+- Improved extension description to better highlight core features (paths, code snippets, and GitHub permalinks)
+
 ## [1.3.0] - 2025-09-24
 
 ### Added
