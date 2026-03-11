@@ -1,0 +1,23 @@
+src/test/suite/extension.test.ts
+  afb6fa5850aa4513 351,353-355,357-359,361-362,364-365,367-377,381-382
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "96d6f94692f1435a28ef8ca9ab0dd32845320242",
+  "prompts": {
+    "afb6fa5850aa4513": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7ca807f7-c983-457d-8657-9392ba5b82ec",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "yoshi47 <yoshix47@gmail.com>",
+      "messages": [],
+      "total_additions": 32,
+      "total_deletions": 67,
+      "accepted_lines": 28,
+      "overriden_lines": 0
+    }
+  }
+}
