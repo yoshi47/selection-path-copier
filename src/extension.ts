@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import * as fs from 'fs';
+import { getGitTopLevel, getGitRemoteUrl, getGitCommitHash, getDefaultBranchName, parseGithubUrl } from './gitHelper.js';
 
-const execAsync = promisify(exec);
+// Re-export for backward compatibility with existing tests
+export { getDefaultBranchName, parseGithubUrl } from './gitHelper.js';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Selection Path Copier is now active!');
@@ -139,74 +140,6 @@ async function copySelectionPath(includeCode: boolean) {
 	vscode.window.showInformationMessage(message);
 }
 
-async function getGitRemoteUrl(workingDir: string): Promise<string | null> {
-	try {
-		const { stdout } = await execAsync('git config --get remote.origin.url', { cwd: workingDir });
-		return stdout.trim();
-	} catch (error) {
-		return null;
-	}
-}
-
-async function getGitCommitHash(workingDir: string): Promise<string | null> {
-	try {
-		const { stdout } = await execAsync('git rev-parse HEAD', { cwd: workingDir });
-		return stdout.trim();
-	} catch (error) {
-		return null;
-	}
-}
-
-export async function getDefaultBranchName(workingDir: string): Promise<string | null> {
-	try {
-		// First try to get the default branch from the remote
-		const { stdout: remoteHead } = await execAsync('git symbolic-ref refs/remotes/origin/HEAD', { cwd: workingDir });
-		// Extract branch name from refs/remotes/origin/main format
-		const match = remoteHead.trim().match(/refs\/remotes\/origin\/(.+)$/);
-		if (match) {
-			return match[1];
-		}
-	} catch {
-		// If that fails, try common default branch names
-		try {
-			// Check if main branch exists
-			await execAsync('git show-ref --verify --quiet refs/heads/main', { cwd: workingDir });
-			return 'main';
-		} catch {
-			try {
-				// Check if master branch exists
-				await execAsync('git show-ref --verify --quiet refs/heads/master', { cwd: workingDir });
-				return 'master';
-			} catch {
-				// Fallback to current branch
-				try {
-					const { stdout: currentBranch } = await execAsync('git rev-parse --abbrev-ref HEAD', { cwd: workingDir });
-					return currentBranch.trim();
-				} catch {
-					return null;
-				}
-			}
-		}
-	}
-	return null;
-}
-
-export function parseGithubUrl(remoteUrl: string): { owner: string; repo: string } | null {
-	// Handle SSH URLs: git@github.com:owner/repo.git
-	const sshMatch = remoteUrl.match(/git@github\.com:(.+)\/(.+?)(?:\.git)?$/);
-	if (sshMatch) {
-		return { owner: sshMatch[1], repo: sshMatch[2] };
-	}
-
-	// Handle HTTPS URLs: https://github.com/owner/repo.git
-	const httpsMatch = remoteUrl.match(/https:\/\/github\.com\/(.+)\/(.+?)(?:\.git)?$/);
-	if (httpsMatch) {
-		return { owner: httpsMatch[1], repo: httpsMatch[2] };
-	}
-
-	return null;
-}
-
 async function copyGithubPermalink(includeCode: boolean) {
 	const editor = vscode.window.activeTextEditor;
 
@@ -219,13 +152,13 @@ async function copyGithubPermalink(includeCode: boolean) {
 	const selection = editor.selection;
 	const filePath = document.fileName;
 
-	const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
-	if (!workspaceFolder) {
-		vscode.window.showErrorMessage('No workspace folder found');
+	const gitTopLevel = await getGitTopLevel(filePath);
+	if (!gitTopLevel) {
+		vscode.window.showErrorMessage('File is not inside a git repository');
 		return;
 	}
 
-	const remoteUrl = await getGitRemoteUrl(workspaceFolder.uri.fsPath);
+	const remoteUrl = await getGitRemoteUrl(gitTopLevel);
 	if (!remoteUrl) {
 		vscode.window.showErrorMessage('Not a git repository or no remote origin found');
 		return;
@@ -244,14 +177,14 @@ async function copyGithubPermalink(includeCode: boolean) {
 
 	let ref: string;
 	if (permalinkType === 'branch') {
-		const branchName = await getDefaultBranchName(workspaceFolder.uri.fsPath);
+		const branchName = await getDefaultBranchName(gitTopLevel);
 		if (!branchName) {
 			vscode.window.showErrorMessage('Could not determine default branch name');
 			return;
 		}
 		ref = branchName;
 	} else {
-		const commitHash = await getGitCommitHash(workspaceFolder.uri.fsPath);
+		const commitHash = await getGitCommitHash(gitTopLevel);
 		if (!commitHash) {
 			vscode.window.showErrorMessage('Could not get current git commit hash');
 			return;
@@ -259,7 +192,9 @@ async function copyGithubPermalink(includeCode: boolean) {
 		ref = commitHash;
 	}
 
-	const relativePath = path.relative(workspaceFolder.uri.fsPath, filePath).replace(/\\/g, '/');
+	// Resolve symlinks (e.g. macOS /tmp → /private/tmp) so path.relative works correctly
+	const resolvedFilePath = fs.realpathSync(filePath);
+	const relativePath = path.relative(gitTopLevel, resolvedFilePath).replace(/\\/g, '/');
 
 	let lineReference = '';
 	let codeContent = '';
