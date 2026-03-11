@@ -324,7 +324,6 @@ suite('Extension Test Suite', () => {
 		let fixtureDir: string;
 		let repoDir: string;
 		let sampleFile: string;
-		let originalFolderCount: number;
 
 		suiteSetup(() => {
 			// Create fixture: non-git workspace with a git sub-repository
@@ -342,80 +341,46 @@ suite('Extension Test Suite', () => {
 
 			execSync('git add sample.ts', { cwd: repoDir });
 			execSync('git commit -m "initial commit"', { cwd: repoDir });
-
-			originalFolderCount = vscode.workspace.workspaceFolders?.length ?? 0;
 		});
 
 		suiteTeardown(() => {
-			// Remove the added workspace folder if still present
-			const folders = vscode.workspace.workspaceFolders ?? [];
-			const addedIndex = folders.findIndex(f => f.uri.fsPath === fixtureDir);
-			if (addedIndex >= 0) {
-				vscode.workspace.updateWorkspaceFolders(addedIndex, 1);
-			}
 			fs.rmSync(fixtureDir, { recursive: true, force: true });
 		});
 
 		test('Copy GitHub Permalink should work when workspace root is not a git repo', async function () {
-			this.timeout(15000);
+			this.timeout(10000);
 
-			// Add the non-git parent directory as a workspace folder
-			const workspaceChangePromise = new Promise<void>(resolve => {
-				const disposable = vscode.workspace.onDidChangeWorkspaceFolders(() => {
-					disposable.dispose();
-					resolve();
-				});
-			});
+			// Open the sample file inside the sub-repo (no workspace folder manipulation needed)
+			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(sampleFile));
+			const editor = await vscode.window.showTextDocument(document);
 
-			const added = vscode.workspace.updateWorkspaceFolders(
-				originalFolderCount,
-				0,
-				{ uri: vscode.Uri.file(fixtureDir) }
+			// Place cursor on line 1
+			const position = new vscode.Position(0, 0);
+			editor.selection = new vscode.Selection(position, position);
+
+			// Execute the permalink command
+			await vscode.commands.executeCommand('selection-path-copier.copyGithubPermalink');
+
+			// Verify clipboard content
+			const clipboardContent = await vscode.env.clipboard.readText();
+
+			assert.ok(
+				clipboardContent.startsWith('https://github.com/test-owner/test-repo/blob/'),
+				`Expected GitHub permalink, got: ${clipboardContent}`
 			);
-			assert.ok(added, 'Failed to add workspace folder');
-
-			await workspaceChangePromise;
-
-			try {
-				// Open the sample file inside the sub-repo
-				const document = await vscode.workspace.openTextDocument(vscode.Uri.file(sampleFile));
-				const editor = await vscode.window.showTextDocument(document);
-
-				// Place cursor on line 1
-				const position = new vscode.Position(0, 0);
-				editor.selection = new vscode.Selection(position, position);
-
-				// Execute the permalink command
-				await vscode.commands.executeCommand('selection-path-copier.copyGithubPermalink');
-
-				// Verify clipboard content
-				const clipboardContent = await vscode.env.clipboard.readText();
-
-				assert.ok(
-					clipboardContent.startsWith('https://github.com/test-owner/test-repo/blob/'),
-					`Expected GitHub permalink, got: ${clipboardContent}`
-				);
-				assert.ok(
-					clipboardContent.includes('/sample.ts'),
-					`Expected path to contain /sample.ts, got: ${clipboardContent}`
-				);
-				// Should NOT contain repo-a in the path (relative to git root, not workspace root)
-				assert.ok(
-					!clipboardContent.includes('/repo-a/'),
-					`Path should be relative to git root, not workspace. Got: ${clipboardContent}`
-				);
-				assert.ok(
-					clipboardContent.includes('#L1'),
-					`Expected #L1 line reference, got: ${clipboardContent}`
-				);
-			} finally {
-				// Clean up: remove the added workspace folder
-				const folders = vscode.workspace.workspaceFolders ?? [];
-				const addedIndex = folders.findIndex(f => f.uri.fsPath === fixtureDir);
-				if (addedIndex >= 0) {
-					vscode.workspace.updateWorkspaceFolders(addedIndex, 1);
-				}
-			}
+			assert.ok(
+				clipboardContent.includes('/sample.ts'),
+				`Expected path to contain /sample.ts, got: ${clipboardContent}`
+			);
+			// Should NOT contain repo-a in the path (relative to git root, not workspace root)
+			assert.ok(
+				!clipboardContent.includes('/repo-a/'),
+				`Path should be relative to git root, not workspace. Got: ${clipboardContent}`
+			);
+			assert.ok(
+				clipboardContent.includes('#L1'),
+				`Expected #L1 line reference, got: ${clipboardContent}`
+			);
 		});
 	});
 });
