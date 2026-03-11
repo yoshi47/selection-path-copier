@@ -1,5 +1,9 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as os from 'os';
+import { execSync } from 'child_process';
 import * as myExtension from '../../extension';
 
 suite('Extension Test Suite', () => {
@@ -313,6 +317,70 @@ suite('Extension Test Suite', () => {
 			if (branchName) {
 				assert.ok(['main', 'master'].includes(branchName) || branchName.length > 0);
 			}
+		});
+	});
+
+	suite('Workspace ≠ Git Repo (Issue #3)', () => {
+		let fixtureDir: string;
+		let repoDir: string;
+		let sampleFile: string;
+
+		suiteSetup(() => {
+			// Create fixture: non-git workspace with a git sub-repository
+			fixtureDir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'spc-test-')));
+			repoDir = path.join(fixtureDir, 'repo-a');
+			fs.mkdirSync(repoDir, { recursive: true });
+
+			execSync('git init', { cwd: repoDir });
+			execSync('git config user.name "Test User"', { cwd: repoDir });
+			execSync('git config user.email "test@example.com"', { cwd: repoDir });
+			execSync('git remote add origin https://github.com/test-owner/test-repo.git', { cwd: repoDir });
+
+			sampleFile = path.join(repoDir, 'sample.ts');
+			fs.writeFileSync(sampleFile, 'const x = 1;\n');
+
+			execSync('git add sample.ts', { cwd: repoDir });
+			execSync('git commit -m "initial commit"', { cwd: repoDir });
+		});
+
+		suiteTeardown(() => {
+			fs.rmSync(fixtureDir, { recursive: true, force: true });
+		});
+
+		test('Copy GitHub Permalink should work when workspace root is not a git repo', async function () {
+			this.timeout(10000);
+
+			// Open the sample file inside the sub-repo (no workspace folder manipulation needed)
+			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(sampleFile));
+			const editor = await vscode.window.showTextDocument(document);
+
+			// Place cursor on line 1
+			const position = new vscode.Position(0, 0);
+			editor.selection = new vscode.Selection(position, position);
+
+			// Execute the permalink command
+			await vscode.commands.executeCommand('selection-path-copier.copyGithubPermalink');
+
+			// Verify clipboard content
+			const clipboardContent = await vscode.env.clipboard.readText();
+
+			assert.ok(
+				clipboardContent.startsWith('https://github.com/test-owner/test-repo/blob/'),
+				`Expected GitHub permalink, got: ${clipboardContent}`
+			);
+			assert.ok(
+				clipboardContent.includes('/sample.ts'),
+				`Expected path to contain /sample.ts, got: ${clipboardContent}`
+			);
+			// Should NOT contain repo-a in the path (relative to git root, not workspace root)
+			assert.ok(
+				!clipboardContent.includes('/repo-a/'),
+				`Path should be relative to git root, not workspace. Got: ${clipboardContent}`
+			);
+			assert.ok(
+				clipboardContent.includes('#L1'),
+				`Expected #L1 line reference, got: ${clipboardContent}`
+			);
 		});
 	});
 });
