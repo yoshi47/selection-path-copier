@@ -1,0 +1,57 @@
+src/test/suite/gitHelper.test.ts
+  f3c60b2400fd16e6 1-145
+src/gitHelper.ts
+  f3c60b2400fd16e6 1-90
+src/test/suite/extension.test.ts
+  f3c60b2400fd16e6 3-6,322-420
+src/extension.ts
+  f3c60b2400fd16e6 4,6-7,157
+  1c5985c1356647c7 3,195-197
+  70617ba0b66e63e2 155-156,161,180,187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "d0a968de7f537770ede60030550cb8d3854a77fa",
+  "prompts": {
+    "1c5985c1356647c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ddbd422a-5efc-400a-be4b-861116620903",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "yoshi47 <yoshix47@gmail.com>",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 1,
+      "accepted_lines": 4,
+      "overriden_lines": 0
+    },
+    "70617ba0b66e63e2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f2cd6c89-289c-42e8-942d-9b1125eb1ad4",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "yoshi47 <yoshix47@gmail.com>",
+      "messages": [],
+      "total_additions": 17,
+      "total_deletions": 7,
+      "accepted_lines": 5,
+      "overriden_lines": 0
+    },
+    "f3c60b2400fd16e6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "660b7481-ae9a-4e9d-a766-ddf001c22a17",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "yoshi47 <yoshix47@gmail.com>",
+      "messages": [],
+      "total_additions": 353,
+      "total_deletions": 93,
+      "accepted_lines": 343,
+      "overriden_lines": 0
+    }
+  }
+}
