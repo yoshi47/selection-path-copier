@@ -1,0 +1,25 @@
+CHANGELOG.md
+  14495192e7efeb8a 5-12
+package.json
+  14495192e7efeb8a 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "bdaf6d466378de7036cf09bb1fa3c292660d1369",
+  "prompts": {
+    "14495192e7efeb8a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a4fd9a2f-d633-48d5-ac34-01fc69f30bd6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "yoshi47 <yoshix47@gmail.com>",
+      "messages": [],
+      "total_additions": 9,
+      "total_deletions": 1,
+      "accepted_lines": 9,
+      "overriden_lines": 0
+    }
+  }
+}
