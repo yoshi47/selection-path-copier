@@ -2,6 +2,14 @@
 
 All notable changes to the "Selection Path Copier" extension will be documented in this file.
 
+## [1.3.3] - 2026-03-11
+
+### Fixed
+- GitHub permalink generation now works correctly in multi-repo workspaces (Issue #3)
+
+### Changed
+- Extracted Git operations into a dedicated helper module (`gitHelper.ts`) for better maintainability
+
 ## [1.3.1] - 2025-10-17
 
 ### Changed
