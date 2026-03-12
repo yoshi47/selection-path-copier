@@ -6,6 +6,19 @@ import { getGitTopLevel, getGitRemoteUrl, getGitCommitHash, getDefaultBranchName
 // Re-export for backward compatibility with existing tests
 export { getDefaultBranchName, parseGithubUrl } from './gitHelper.js';
 
+const cachedConfig = {
+	showStatusBarItem: true,
+	pathType: 'relative' as string,
+	lineNumberFormat: 'github' as string,
+};
+
+function refreshCachedConfig(): void {
+	const config = vscode.workspace.getConfiguration('selection-path-copier');
+	cachedConfig.showStatusBarItem = config.get<boolean>('showStatusBarItem', true);
+	cachedConfig.pathType = config.get<string>('pathType', 'relative');
+	cachedConfig.lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
+}
+
 export function getDisplayPath(document: vscode.TextDocument, pathType: string): string {
 	if (pathType === 'relative') {
 		const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
@@ -17,16 +30,12 @@ export function getDisplayPath(document: vscode.TextDocument, pathType: string):
 }
 
 function updateStatusBarItem(statusBarItem: vscode.StatusBarItem, editor: vscode.TextEditor | undefined): void {
-	const config = vscode.workspace.getConfiguration('selection-path-copier');
-	const showStatusBarItem = config.get<boolean>('showStatusBarItem', true);
-
-	if (!editor || !showStatusBarItem) {
+	if (!editor || !cachedConfig.showStatusBarItem) {
 		statusBarItem.hide();
 		return;
 	}
 
-	const pathType = config.get<string>('pathType', 'relative');
-	const lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
+	const { pathType, lineNumberFormat } = cachedConfig;
 
 	const displayPath = getDisplayPath(editor.document, pathType);
 	const selection = editor.selection;
@@ -71,6 +80,8 @@ export function activate(context: vscode.ExtensionContext) {
 	statusBarItem.command = 'selection-path-copier.copyPath';
 	statusBarItem.tooltip = 'Click to copy path';
 
+	refreshCachedConfig();
+
 	context.subscriptions.push(
 		copyPathCommand,
 		copyPathWithCodeCommand,
@@ -81,6 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.onDidChangeTextEditorSelection(event => updateStatusBarItem(statusBarItem, event.textEditor)),
 		vscode.workspace.onDidChangeConfiguration(event => {
 			if (event.affectsConfiguration('selection-path-copier')) {
+				refreshCachedConfig();
 				updateStatusBarItem(statusBarItem, vscode.window.activeTextEditor);
 			}
 		}),
