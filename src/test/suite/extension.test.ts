@@ -10,14 +10,21 @@ suite('Extension Test Suite', () => {
 	vscode.window.showInformationMessage('Start all tests.');
 
 	suiteSetup(async () => {
-		// Ensure the extension is activated
-		// The extension ID should match the publisher.name from package.json
+		// Ensure the extension is activated.
+		// With "onStartupFinished" activation event, VS Code activates the extension
+		// automatically before tests run, so we only call activate() as a fallback
+		// when the extension is genuinely not yet active.
 		const ext = vscode.extensions.getExtension('undefined.selection-path-copier');
-		if (!ext) {
-			// In test environment, manually activate the extension
-			await myExtension.activate({ subscriptions: [] } as any);
-		} else if (!ext.isActive) {
-			await ext.activate();
+		if (ext) {
+			if (!ext.isActive) {
+				await ext.activate();
+			}
+		} else {
+			// Extension ID not found — check if already activated by seeing if commands exist
+			const commands = await vscode.commands.getCommands(true);
+			if (!commands.includes('selection-path-copier.copyPath')) {
+				await myExtension.activate({ subscriptions: [] } as any);
+			}
 		}
 	});
 
