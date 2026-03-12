@@ -1,41 +1,7 @@
-src/extension.ts
-  c677a4a9002858cd 150-151
-  26ea5aa204bb1d49 9-49,69-87,89,148-149
-package.json
-  26ea5aa204bb1d49 153-157
-src/test/suite/extension.test.ts
-  c677a4a9002858cd 423-476
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.1.10",
   "base_commit_sha": "3bd92c82525da13676248c8bec8196ad2e0b2762",
-  "prompts": {
-    "26ea5aa204bb1d49": {
-      "agent_id": {
-        "tool": "claude",
-        "id": "68ac552d-2df9-48ca-921c-88c814a81e55",
-        "model": "claude-opus-4-6"
-      },
-      "human_author": "yoshi47 <yoshix47@gmail.com>",
-      "messages": [],
-      "total_additions": 72,
-      "total_deletions": 16,
-      "accepted_lines": 69,
-      "overriden_lines": 0
-    },
-    "c677a4a9002858cd": {
-      "agent_id": {
-        "tool": "claude",
-        "id": "a10fb7c0-fcb6-4735-aa82-798a1b63f5b7",
-        "model": "claude-opus-4-6"
-      },
-      "human_author": "yoshi47 <yoshix47@gmail.com>",
-      "messages": [],
-      "total_additions": 57,
-      "total_deletions": 0,
-      "accepted_lines": 57,
-      "overriden_lines": 0
-    }
-  }
+  "prompts": {}
 }
