@@ -10,6 +10,7 @@ A Visual Studio Code extension that copies file paths with line numbers, code sn
   - On empty lines, copies just the file path without line number
 - **Copy Path with Code**: Copy both the file path reference and the code content
 - **Copy GitHub Permalink**: Generate permanent GitHub links using commit hash for stable references
+- **Markdown-Friendly GitHub Permalinks**: Automatically adds `?plain=1` for `.md` files so GitHub can highlight the linked lines
 - **Markdown Code Blocks**: Option to wrap code in markdown code blocks with syntax highlighting
 - **Relative or Absolute Paths**: Configure whether to use relative paths (from workspace root) or absolute paths
 - **Multi-line Selection Support**: Automatically formats single line or range references
@@ -69,6 +70,11 @@ https://github.com/yoshi47/my-project/blob/e3873f70720c00e07f9b202a97367ab460f80
 **GitHub Permalink (branch name):**
 ```
 https://github.com/yoshi47/my-project/blob/main/src/components/Header.tsx#L25-L30
+```
+
+**GitHub Permalink for Markdown files:**
+```
+https://github.com/yoshi47/my-project/blob/e3873f70720c00e07f9b202a97367ab460f8051f/README.md?plain=1#L25-L30
 ```
 
 **GitHub Permalink with Code:**
@@ -136,3 +142,5 @@ This extension contributes the following settings:
 * `selection-path-copier.githubPermalinkType`: Choose permalink reference type
   - `"commit"` (default): Use commit hash for permanent reference (e.g., `/blob/abc123...`)
   - `"branch"`: Use default branch name (e.g., `/blob/main` or `/blob/master`)
+
+For `.md` files, GitHub permalinks automatically include `?plain=1` before the line fragment so the page opens in plain view and the target line or range is highlighted.

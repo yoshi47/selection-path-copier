@@ -55,6 +55,18 @@ export function formatLineNumber(startLine: number, endLine: number | undefined,
 	}
 }
 
+export function buildGithubPermalinkUrl(
+	githubInfo: { owner: string; repo: string },
+	ref: string,
+	relativePath: string,
+	lineReference: string
+): string {
+	const needsPlainView = path.extname(relativePath).toLowerCase() === '.md';
+	const pathWithQuery = needsPlainView ? `${relativePath}?plain=1` : relativePath;
+
+	return `https://github.com/${githubInfo.owner}/${githubInfo.repo}/blob/${ref}/${pathWithQuery}${lineReference}`;
+}
+
 async function copySelectionPath(includeCode: boolean) {
 	const editor = vscode.window.activeTextEditor;
 	
@@ -225,7 +237,7 @@ async function copyGithubPermalink(includeCode: boolean) {
 		}
 	}
 
-	const permalinkUrl = `https://github.com/${githubInfo.owner}/${githubInfo.repo}/blob/${ref}/${relativePath}${lineReference}`;
+	const permalinkUrl = buildGithubPermalinkUrl(githubInfo, ref, relativePath, lineReference);
 
 	let clipboardContent = permalinkUrl;
 

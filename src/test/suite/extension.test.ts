@@ -252,6 +252,43 @@ suite('Extension Test Suite', () => {
 		});
 	});
 
+	suite('GitHub Permalink URL Building', () => {
+		const githubInfo = { owner: 'yoshi47', repo: 'selection-path-copier' };
+		const ref = 'abc123def456';
+
+		test('Should add plain=1 for markdown single-line permalinks', () => {
+			const result = myExtension.buildGithubPermalinkUrl(githubInfo, ref, 'README.md', '#L14');
+			assert.strictEqual(
+				result,
+				'https://github.com/yoshi47/selection-path-copier/blob/abc123def456/README.md?plain=1#L14'
+			);
+		});
+
+		test('Should add plain=1 for markdown range permalinks', () => {
+			const result = myExtension.buildGithubPermalinkUrl(githubInfo, ref, 'docs/guide.md', '#L14-L18');
+			assert.strictEqual(
+				result,
+				'https://github.com/yoshi47/selection-path-copier/blob/abc123def456/docs/guide.md?plain=1#L14-L18'
+			);
+		});
+
+		test('Should not add plain=1 for non-markdown permalinks', () => {
+			const result = myExtension.buildGithubPermalinkUrl(githubInfo, ref, 'src/extension.ts', '#L20-L40');
+			assert.strictEqual(
+				result,
+				'https://github.com/yoshi47/selection-path-copier/blob/abc123def456/src/extension.ts#L20-L40'
+			);
+		});
+
+		test('Should detect markdown extension case-insensitively', () => {
+			const result = myExtension.buildGithubPermalinkUrl(githubInfo, ref, 'docs/README.MD', '#L7');
+			assert.strictEqual(
+				result,
+				'https://github.com/yoshi47/selection-path-copier/blob/abc123def456/docs/README.MD?plain=1#L7'
+			);
+		});
+	});
+
 	suite('GitHub Permalink Integration Tests', () => {
 		test('Copy GitHub Permalink command should handle missing git repository gracefully', async () => {
 			// Create a new text document in a non-git directory
