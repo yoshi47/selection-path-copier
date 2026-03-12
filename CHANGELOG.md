@@ -2,6 +2,19 @@
 
 All notable changes to the "Selection Path Copier" extension will be documented in this file.
 
+## [1.4.0] - 2026-03-12
+
+### Added
+- Status bar item showing current file path and line number (click to copy)
+  - Configurable via `selection-path-copier.showStatusBarItem` setting
+- Automatic `?plain=1` for Markdown file GitHub permalinks so linked lines are highlighted
+
+### Changed
+- Cached status bar configuration for better performance (no longer reads settings on every keystroke)
+
+### Fixed
+- Test suite no longer fails with "command already exists" when extension auto-activates on startup
+
 ## [1.3.3] - 2026-03-11
 
 ### Fixed
