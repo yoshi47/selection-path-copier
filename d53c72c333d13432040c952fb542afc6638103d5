@@ -1,0 +1,23 @@
+src/extension.ts
+  24ec8d5b13bdeb9c 9-21,33,38,83-84,95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "d53c72c333d13432040c952fb542afc6638103d5",
+  "prompts": {
+    "24ec8d5b13bdeb9c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "554b337b-33f3-4e99-99c6-3a87f03cc0a4",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "yoshi47 <yoshix47@gmail.com>",
+      "messages": [],
+      "total_additions": 24,
+      "total_deletions": 12,
+      "accepted_lines": 18,
+      "overriden_lines": 0
+    }
+  }
+}
