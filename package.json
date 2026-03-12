@@ -36,7 +36,9 @@
     "color": "#1e1e1e",
     "theme": "dark"
   },
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -147,6 +149,11 @@
             "Markdown code block with syntax highlighting"
           ],
           "description": "Choose the code format when copying with code"
+        },
+        "selection-path-copier.showStatusBarItem": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show file path and line number in the status bar"
         },
         "selection-path-copier.githubPermalinkType": {
           "type": "string",

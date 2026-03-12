@@ -6,6 +6,47 @@ import { getGitTopLevel, getGitRemoteUrl, getGitCommitHash, getDefaultBranchName
 // Re-export for backward compatibility with existing tests
 export { getDefaultBranchName, parseGithubUrl } from './gitHelper.js';
 
+export function getDisplayPath(document: vscode.TextDocument, pathType: string): string {
+	if (pathType === 'relative') {
+		const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
+		if (workspaceFolder) {
+			return path.relative(workspaceFolder.uri.fsPath, document.fileName);
+		}
+	}
+	return document.fileName;
+}
+
+function updateStatusBarItem(statusBarItem: vscode.StatusBarItem, editor: vscode.TextEditor | undefined): void {
+	const config = vscode.workspace.getConfiguration('selection-path-copier');
+	const showStatusBarItem = config.get<boolean>('showStatusBarItem', true);
+
+	if (!editor || !showStatusBarItem) {
+		statusBarItem.hide();
+		return;
+	}
+
+	const pathType = config.get<string>('pathType', 'relative');
+	const lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
+
+	const displayPath = getDisplayPath(editor.document, pathType);
+	const selection = editor.selection;
+
+	let lineReference: string;
+	if (selection.isEmpty) {
+		const lineNumber = selection.active.line + 1;
+		lineReference = formatLineNumber(lineNumber, undefined, lineNumberFormat);
+	} else {
+		const startLine = selection.start.line + 1;
+		const endLine = selection.end.line + 1;
+		lineReference = startLine === endLine
+			? formatLineNumber(startLine, undefined, lineNumberFormat)
+			: formatLineNumber(startLine, endLine, lineNumberFormat);
+	}
+
+	statusBarItem.text = `$(copy) ${displayPath}${lineReference}`;
+	statusBarItem.show();
+}
+
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Selection Path Copier is now active!');
 
@@ -25,7 +66,27 @@ export function activate(context: vscode.ExtensionContext) {
 		await copyGithubPermalink(true);
 	});
 
-	context.subscriptions.push(copyPathCommand, copyPathWithCodeCommand, copyGithubPermalinkCommand, copyGithubPermalinkWithCodeCommand);
+	// Status bar item
+	const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	statusBarItem.command = 'selection-path-copier.copyPath';
+	statusBarItem.tooltip = 'Click to copy path';
+
+	context.subscriptions.push(
+		copyPathCommand,
+		copyPathWithCodeCommand,
+		copyGithubPermalinkCommand,
+		copyGithubPermalinkWithCodeCommand,
+		statusBarItem,
+		vscode.window.onDidChangeActiveTextEditor(editor => updateStatusBarItem(statusBarItem, editor)),
+		vscode.window.onDidChangeTextEditorSelection(event => updateStatusBarItem(statusBarItem, event.textEditor)),
+		vscode.workspace.onDidChangeConfiguration(event => {
+			if (event.affectsConfiguration('selection-path-copier')) {
+				updateStatusBarItem(statusBarItem, vscode.window.activeTextEditor);
+			}
+		}),
+	);
+
+	updateStatusBarItem(statusBarItem, vscode.window.activeTextEditor);
 }
 
 export function formatLineNumber(startLine: number, endLine: number | undefined, format: string): string {
@@ -84,19 +145,10 @@ async function copySelectionPath(includeCode: boolean) {
 	const includeBlankLine = config.get<boolean>('includeBlankLine', true);
 	const lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
 	const codeFormat = config.get<string>('codeFormat', 'plain');
-	
-	let displayPath: string;
-	
-	if (pathType === 'relative') {
-		const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
-		if (!workspaceFolder) {
-			vscode.window.showErrorMessage('No workspace folder found. Using absolute path instead.');
-			displayPath = filePath;
-		} else {
-			displayPath = path.relative(workspaceFolder.uri.fsPath, filePath);
-		}
-	} else {
-		displayPath = filePath;
+
+	const displayPath = getDisplayPath(document, pathType);
+	if (pathType === 'relative' && displayPath === document.fileName) {
+		vscode.window.showErrorMessage('No workspace folder found. Using absolute path instead.');
 	}
 
 	let lineReference = '';

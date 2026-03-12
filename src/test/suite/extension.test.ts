@@ -420,4 +420,58 @@ suite('Extension Test Suite', () => {
 			);
 		});
 	});
+
+	suite('getDisplayPath', () => {
+		test('should return relative path when pathType is relative and file is in workspace', async () => {
+			const workspaceFolders = vscode.workspace.workspaceFolders;
+			if (!workspaceFolders || workspaceFolders.length === 0) {
+				// Skip test if no workspace folder is open
+				return;
+			}
+
+			// Create a file inside the workspace
+			const workspaceUri = workspaceFolders[0].uri;
+			const testFileUri = vscode.Uri.joinPath(workspaceUri, 'test-getDisplayPath.txt');
+			await vscode.workspace.fs.writeFile(testFileUri, Buffer.from('test content'));
+
+			try {
+				const document = await vscode.workspace.openTextDocument(testFileUri);
+				const result = myExtension.getDisplayPath(document, 'relative');
+
+				assert.strictEqual(result, 'test-getDisplayPath.txt');
+			} finally {
+				await vscode.workspace.fs.delete(testFileUri);
+			}
+		});
+
+		test('should return absolute path when pathType is relative but file is outside workspace', async () => {
+			// Create an untitled document (not associated with any workspace)
+			const document = await vscode.workspace.openTextDocument({ content: 'outside workspace' });
+			const result = myExtension.getDisplayPath(document, 'relative');
+
+			// Should fall back to document.fileName (absolute path)
+			assert.strictEqual(result, document.fileName);
+		});
+
+		test('should return absolute path when pathType is absolute', async () => {
+			const workspaceFolders = vscode.workspace.workspaceFolders;
+			if (!workspaceFolders || workspaceFolders.length === 0) {
+				return;
+			}
+
+			const workspaceUri = workspaceFolders[0].uri;
+			const testFileUri = vscode.Uri.joinPath(workspaceUri, 'test-getDisplayPath-abs.txt');
+			await vscode.workspace.fs.writeFile(testFileUri, Buffer.from('test content'));
+
+			try {
+				const document = await vscode.workspace.openTextDocument(testFileUri);
+				const result = myExtension.getDisplayPath(document, 'absolute');
+
+				// Should return the full file path
+				assert.strictEqual(result, document.fileName);
+			} finally {
+				await vscode.workspace.fs.delete(testFileUri);
+			}
+		});
+	});
 });
