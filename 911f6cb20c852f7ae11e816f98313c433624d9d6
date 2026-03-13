@@ -1,25 +1,7 @@
-src/extension.ts
-  b203a05f80296eee 41,56-57
-src/test/suite/extension.test.ts
-  b203a05f80296eee 372-373
 ---
 {
   "schema_version": "authorship/3.0.0",
   "git_ai_version": "1.1.11",
   "base_commit_sha": "911f6cb20c852f7ae11e816f98313c433624d9d6",
-  "prompts": {
-    "b203a05f80296eee": {
-      "agent_id": {
-        "tool": "claude",
-        "id": "37fd98f6-a545-4b2a-a87b-8b873dd4a8ce",
-        "model": "claude-opus-4-6"
-      },
-      "human_author": "yoshi47 <yoshix47@gmail.com>",
-      "messages": [],
-      "total_additions": 10,
-      "total_deletions": 3,
-      "accepted_lines": 7,
-      "overriden_lines": 0
-    }
-  }
+  "prompts": {}
 }
