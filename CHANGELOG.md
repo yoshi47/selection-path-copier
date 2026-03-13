@@ -2,6 +2,14 @@
 
 All notable changes to the "Selection Path Copier" extension will be documented in this file.
 
+## [1.4.1] - 2026-03-13
+
+### Changed
+- Status bar now shows only filename + line number for a more compact display (full path shown in tooltip)
+
+### Fixed
+- Test suite timeout in "Workspace ≠ Git Repo" setup
+
 ## [1.4.0] - 2026-03-12
 
 ### Added
