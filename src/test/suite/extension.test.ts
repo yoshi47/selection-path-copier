@@ -369,7 +369,8 @@ suite('Extension Test Suite', () => {
 		let repoDir: string;
 		let sampleFile: string;
 
-		suiteSetup(() => {
+		suiteSetup(function () {
+			this.timeout(10000);
 			// Create fixture: non-git workspace with a git sub-repository
 			fixtureDir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'spc-test-')));
 			repoDir = path.join(fixtureDir, 'repo-a');

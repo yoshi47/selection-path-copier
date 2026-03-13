@@ -38,6 +38,7 @@ function updateStatusBarItem(statusBarItem: vscode.StatusBarItem, editor: vscode
 	const { pathType, lineNumberFormat } = cachedConfig;
 
 	const displayPath = getDisplayPath(editor.document, pathType);
+	const fileName = path.basename(editor.document.fileName);
 	const selection = editor.selection;
 
 	let lineReference: string;
@@ -52,7 +53,8 @@ function updateStatusBarItem(statusBarItem: vscode.StatusBarItem, editor: vscode
 			: formatLineNumber(startLine, endLine, lineNumberFormat);
 	}
 
-	statusBarItem.text = `$(copy) ${displayPath}${lineReference}`;
+	statusBarItem.text = `$(copy) ${fileName}${lineReference}`;
+	statusBarItem.tooltip = `${displayPath}${lineReference} — Click to copy`;
 	statusBarItem.show();
 }
 
