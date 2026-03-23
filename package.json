@@ -185,7 +185,7 @@
     "@types/node": "^20.19.21",
     "@types/vscode": "^1.57.0",
     "@vscode/test-electron": "^2.5.2",
-    "glob": "^11.0.3",
+    "glob": "^11.1.0",
     "mocha": "^11.7.4",
     "typescript": "^5.9.3"
   }
