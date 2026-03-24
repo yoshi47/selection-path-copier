@@ -59,6 +59,28 @@ suite('Extension Test Suite', () => {
 		});
 	});
 
+	suite('buildStatusBarText', () => {
+		test('full mode shows icon, filename, and line reference', () => {
+			assert.strictEqual(myExtension.buildStatusBarText('file.ts', '#L10', 'full'), '$(copy) file.ts#L10');
+		});
+
+		test('compact mode shows icon and line reference only', () => {
+			assert.strictEqual(myExtension.buildStatusBarText('file.ts', '#L10', 'compact'), '$(copy) #L10');
+		});
+
+		test('iconOnly mode shows icon only', () => {
+			assert.strictEqual(myExtension.buildStatusBarText('file.ts', '#L10', 'iconOnly'), '$(copy)');
+		});
+
+		test('unknown mode defaults to full', () => {
+			assert.strictEqual(myExtension.buildStatusBarText('file.ts', '#L10', 'unknown'), '$(copy) file.ts#L10');
+		});
+
+		test('compact mode with empty lineReference shows icon only', () => {
+			assert.strictEqual(myExtension.buildStatusBarText('file.ts', '', 'compact'), '$(copy)');
+		});
+	});
+
 	suite('Commands', () => {
 		test('Copy Path command should be registered', async () => {
 			const commands = await vscode.commands.getCommands(true);
@@ -104,6 +126,12 @@ suite('Extension Test Suite', () => {
 			const config = vscode.workspace.getConfiguration('selection-path-copier');
 			const codeFormat = config.get<string>('codeFormat');
 			assert.strictEqual(codeFormat, 'plain');
+		});
+
+		test('statusBarDisplayMode configuration should have correct default', () => {
+			const config = vscode.workspace.getConfiguration('selection-path-copier');
+			const displayMode = config.get<string>('statusBarDisplayMode');
+			assert.strictEqual(displayMode, 'full');
 		});
 
 		test('githubPermalinkType configuration should have correct default', () => {

@@ -155,6 +155,21 @@
           "default": true,
           "description": "Show file path and line number in the status bar"
         },
+        "selection-path-copier.statusBarDisplayMode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "compact",
+            "iconOnly"
+          ],
+          "default": "full",
+          "enumDescriptions": [
+            "Show icon, filename, and line number (e.g., file.ts#L10)",
+            "Show icon and line number only (e.g., #L10)",
+            "Show icon only"
+          ],
+          "description": "Choose what to display in the status bar item"
+        },
         "selection-path-copier.githubPermalinkType": {
           "type": "string",
           "enum": [

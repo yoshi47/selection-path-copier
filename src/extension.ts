@@ -10,6 +10,7 @@ const cachedConfig = {
 	showStatusBarItem: true,
 	pathType: 'relative' as string,
 	lineNumberFormat: 'github' as string,
+	statusBarDisplayMode: 'full' as string,
 };
 
 function refreshCachedConfig(): void {
@@ -17,6 +18,7 @@ function refreshCachedConfig(): void {
 	cachedConfig.showStatusBarItem = config.get<boolean>('showStatusBarItem', true);
 	cachedConfig.pathType = config.get<string>('pathType', 'relative');
 	cachedConfig.lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
+	cachedConfig.statusBarDisplayMode = config.get<string>('statusBarDisplayMode', 'full');
 }
 
 export function getDisplayPath(document: vscode.TextDocument, pathType: string): string {
@@ -27,6 +29,20 @@ export function getDisplayPath(document: vscode.TextDocument, pathType: string):
 		}
 	}
 	return document.fileName;
+}
+
+export function buildStatusBarText(fileName: string, lineReference: string, displayMode: string): string {
+	switch (displayMode) {
+		case 'iconOnly':
+			return '$(copy)';
+		case 'compact':
+			return lineReference ? `$(copy) ${lineReference}` : '$(copy)';
+		case 'full':
+			return `$(copy) ${fileName}${lineReference}`;
+		default:
+			console.warn(`Unknown statusBarDisplayMode: "${displayMode}", falling back to "full"`);
+			return `$(copy) ${fileName}${lineReference}`;
+	}
 }
 
 function updateStatusBarItem(statusBarItem: vscode.StatusBarItem, editor: vscode.TextEditor | undefined): void {
@@ -53,7 +69,7 @@ function updateStatusBarItem(statusBarItem: vscode.StatusBarItem, editor: vscode
 			: formatLineNumber(startLine, endLine, lineNumberFormat);
 	}
 
-	statusBarItem.text = `$(copy) ${fileName}${lineReference}`;
+	statusBarItem.text = buildStatusBarText(fileName, lineReference, cachedConfig.statusBarDisplayMode);
 	statusBarItem.tooltip = `${displayPath}${lineReference} — Click to copy`;
 	statusBarItem.show();
 }
