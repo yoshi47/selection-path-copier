@@ -2,6 +2,17 @@
 
 All notable changes to the "Selection Path Copier" extension will be documented in this file.
 
+## [1.5.0] - 2026-03-25
+
+### Added
+- Status bar display mode setting (`statusBarDisplayMode`) with three options:
+  - `full`: Show icon, filename, and line number (default)
+  - `compact`: Show icon and line number only
+  - `iconOnly`: Show icon only
+
+### Changed
+- Bumped dependencies: js-yaml 4.1.1, glob, minimatch
+
 ## [1.4.1] - 2026-03-13
 
 ### Changed

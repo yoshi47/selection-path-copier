@@ -139,6 +139,11 @@ This extension contributes the following settings:
   - `"plain"` (default): Plain text format
   - `"markdown"`: Markdown code block with syntax highlighting
 
+* `selection-path-copier.statusBarDisplayMode`: Choose what to display in the status bar item
+  - `"full"` (default): Show icon, filename, and line number (e.g., `file.ts#L10`)
+  - `"compact"`: Show icon and line number only (e.g., `#L10`)
+  - `"iconOnly"`: Show icon only
+
 * `selection-path-copier.githubPermalinkType`: Choose permalink reference type
   - `"commit"` (default): Use commit hash for permanent reference (e.g., `/blob/abc123...`)
   - `"branch"`: Use default branch name (e.g., `/blob/main` or `/blob/master`)
