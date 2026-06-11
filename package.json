@@ -194,6 +194,9 @@
     "lint": "tsc --noEmit",
     "test": "node ./out/test/runTest.js"
   },
+  "overrides": {
+    "serialize-javascript": "^7.0.5"
+  },
   "devDependencies": {
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.10",
