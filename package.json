@@ -170,6 +170,23 @@
           ],
           "description": "Choose what to display in the status bar item"
         },
+        "selection-path-copier.statusBarClickAction": {
+          "type": "string",
+          "enum": [
+            "copyPath",
+            "copyPathWithCode",
+            "copyGithubPermalink",
+            "copyGithubPermalinkWithCode"
+          ],
+          "default": "copyPath",
+          "enumDescriptions": [
+            "Copy path with line number (current default behavior)",
+            "Copy path with line number and selected code",
+            "Copy GitHub permalink",
+            "Copy GitHub permalink and selected code"
+          ],
+          "description": "Choose what happens when clicking the status bar item"
+        },
         "selection-path-copier.githubPermalinkType": {
           "type": "string",
           "enum": [
