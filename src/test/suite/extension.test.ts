@@ -81,6 +81,43 @@ suite('Extension Test Suite', () => {
 		});
 	});
 
+	suite('getStatusBarClickCommand', () => {
+		test('copyPath action maps to Copy Path command', () => {
+			assert.strictEqual(
+				myExtension.getStatusBarClickCommand('copyPath'),
+				'selection-path-copier.copyPath'
+			);
+		});
+
+		test('copyPathWithCode action maps to Copy Path with Code command', () => {
+			assert.strictEqual(
+				myExtension.getStatusBarClickCommand('copyPathWithCode'),
+				'selection-path-copier.copyPathWithCode'
+			);
+		});
+
+		test('copyGithubPermalink action maps to Copy GitHub Permalink command', () => {
+			assert.strictEqual(
+				myExtension.getStatusBarClickCommand('copyGithubPermalink'),
+				'selection-path-copier.copyGithubPermalink'
+			);
+		});
+
+		test('copyGithubPermalinkWithCode action maps to Copy GitHub Permalink with Code command', () => {
+			assert.strictEqual(
+				myExtension.getStatusBarClickCommand('copyGithubPermalinkWithCode'),
+				'selection-path-copier.copyGithubPermalinkWithCode'
+			);
+		});
+
+		test('unknown action defaults to Copy Path command', () => {
+			assert.strictEqual(
+				myExtension.getStatusBarClickCommand('unknown'),
+				'selection-path-copier.copyPath'
+			);
+		});
+	});
+
 	suite('Commands', () => {
 		test('Copy Path command should be registered', async () => {
 			const commands = await vscode.commands.getCommands(true);
@@ -132,6 +169,12 @@ suite('Extension Test Suite', () => {
 			const config = vscode.workspace.getConfiguration('selection-path-copier');
 			const displayMode = config.get<string>('statusBarDisplayMode');
 			assert.strictEqual(displayMode, 'full');
+		});
+
+		test('statusBarClickAction configuration should have correct default', () => {
+			const config = vscode.workspace.getConfiguration('selection-path-copier');
+			const clickAction = config.get<string>('statusBarClickAction');
+			assert.strictEqual(clickAction, 'copyPath');
 		});
 
 		test('githubPermalinkType configuration should have correct default', () => {

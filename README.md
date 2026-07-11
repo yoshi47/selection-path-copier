@@ -15,6 +15,7 @@ A Visual Studio Code extension that copies file paths with line numbers, code sn
 - **Relative or Absolute Paths**: Configure whether to use relative paths (from workspace root) or absolute paths
 - **Multi-line Selection Support**: Automatically formats single line or range references
 - **Multiple Format Options**: GitHub, Editor, and Parentheses formats
+- **Configurable Status Bar Click Action**: Choose which copy command runs when clicking the status bar item
 
 ## Usage
 
@@ -143,6 +144,12 @@ This extension contributes the following settings:
   - `"full"` (default): Show icon, filename, and line number (e.g., `file.ts#L10`)
   - `"compact"`: Show icon and line number only (e.g., `#L10`)
   - `"iconOnly"`: Show icon only
+
+* `selection-path-copier.statusBarClickAction`: Choose what happens when clicking the status bar item
+  - `"copyPath"` (default): Copy path with line number
+  - `"copyPathWithCode"`: Copy path with line number and selected code
+  - `"copyGithubPermalink"`: Copy GitHub permalink
+  - `"copyGithubPermalinkWithCode"`: Copy GitHub permalink and selected code
 
 * `selection-path-copier.githubPermalinkType`: Choose permalink reference type
   - `"commit"` (default): Use commit hash for permanent reference (e.g., `/blob/abc123...`)

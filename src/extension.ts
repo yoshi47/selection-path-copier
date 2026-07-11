@@ -11,6 +11,7 @@ const cachedConfig = {
 	pathType: 'relative' as string,
 	lineNumberFormat: 'github' as string,
 	statusBarDisplayMode: 'full' as string,
+	statusBarClickAction: 'copyPath' as string,
 };
 
 function refreshCachedConfig(): void {
@@ -19,6 +20,7 @@ function refreshCachedConfig(): void {
 	cachedConfig.pathType = config.get<string>('pathType', 'relative');
 	cachedConfig.lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
 	cachedConfig.statusBarDisplayMode = config.get<string>('statusBarDisplayMode', 'full');
+	cachedConfig.statusBarClickAction = config.get<string>('statusBarClickAction', 'copyPath');
 }
 
 export function getDisplayPath(document: vscode.TextDocument, pathType: string): string {
@@ -42,6 +44,22 @@ export function buildStatusBarText(fileName: string, lineReference: string, disp
 		default:
 			console.warn(`Unknown statusBarDisplayMode: "${displayMode}", falling back to "full"`);
 			return `$(copy) ${fileName}${lineReference}`;
+	}
+}
+
+export function getStatusBarClickCommand(clickAction: string): string {
+	switch (clickAction) {
+		case 'copyPathWithCode':
+			return 'selection-path-copier.copyPathWithCode';
+		case 'copyGithubPermalink':
+			return 'selection-path-copier.copyGithubPermalink';
+		case 'copyGithubPermalinkWithCode':
+			return 'selection-path-copier.copyGithubPermalinkWithCode';
+		case 'copyPath':
+			return 'selection-path-copier.copyPath';
+		default:
+			console.warn(`Unknown statusBarClickAction: "${clickAction}", falling back to "copyPath"`);
+			return 'selection-path-copier.copyPath';
 	}
 }
 
@@ -70,6 +88,7 @@ function updateStatusBarItem(statusBarItem: vscode.StatusBarItem, editor: vscode
 	}
 
 	statusBarItem.text = buildStatusBarText(fileName, lineReference, cachedConfig.statusBarDisplayMode);
+	statusBarItem.command = getStatusBarClickCommand(cachedConfig.statusBarClickAction);
 	statusBarItem.tooltip = `${displayPath}${lineReference} — Click to copy`;
 	statusBarItem.show();
 }
