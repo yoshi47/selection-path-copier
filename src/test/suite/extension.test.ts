@@ -118,6 +118,80 @@ suite('Extension Test Suite', () => {
 		});
 	});
 
+	suite('normalizeEnumSetting', () => {
+		test('valid value is accepted', () => {
+			assert.deepStrictEqual(
+				myExtension.normalizeEnumSetting('compact', myExtension.STATUS_BAR_DISPLAY_MODES, 'full'),
+				{ value: 'compact', isValid: true }
+			);
+		});
+
+		test('invalid string falls back to default and reports invalid', () => {
+			assert.deepStrictEqual(
+				myExtension.normalizeEnumSetting('copypath', myExtension.STATUS_BAR_CLICK_ACTIONS, 'copyPath'),
+				{ value: 'copyPath', isValid: false }
+			);
+		});
+
+		test('non-string value falls back to default and reports invalid', () => {
+			assert.deepStrictEqual(
+				myExtension.normalizeEnumSetting(true, myExtension.STATUS_BAR_CLICK_ACTIONS, 'copyPath'),
+				{ value: 'copyPath', isValid: false }
+			);
+		});
+
+		test('undefined falls back to default and reports invalid', () => {
+			assert.deepStrictEqual(
+				myExtension.normalizeEnumSetting(undefined, myExtension.PATH_TYPES, 'relative'),
+				{ value: 'relative', isValid: false }
+			);
+		});
+	});
+
+	suite('Enum consistency with package.json', () => {
+		function getContributedEnum(key: string): string[] {
+			const packageJsonPath = path.resolve(__dirname, '../../../package.json');
+			const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+			return packageJson.contributes.configuration.properties[`selection-path-copier.${key}`].enum;
+		}
+
+		test('pathType enum matches PATH_TYPES', () => {
+			assert.deepStrictEqual(getContributedEnum('pathType'), [...myExtension.PATH_TYPES]);
+		});
+
+		test('lineNumberFormat enum matches LINE_NUMBER_FORMATS', () => {
+			assert.deepStrictEqual(getContributedEnum('lineNumberFormat'), [...myExtension.LINE_NUMBER_FORMATS]);
+		});
+
+		test('codeFormat enum matches CODE_FORMATS', () => {
+			assert.deepStrictEqual(getContributedEnum('codeFormat'), [...myExtension.CODE_FORMATS]);
+		});
+
+		test('githubPermalinkType enum matches GITHUB_PERMALINK_TYPES', () => {
+			assert.deepStrictEqual(getContributedEnum('githubPermalinkType'), [...myExtension.GITHUB_PERMALINK_TYPES]);
+		});
+
+		test('statusBarDisplayMode enum matches STATUS_BAR_DISPLAY_MODES', () => {
+			assert.deepStrictEqual(getContributedEnum('statusBarDisplayMode'), [...myExtension.STATUS_BAR_DISPLAY_MODES]);
+		});
+
+		test('statusBarClickAction enum matches STATUS_BAR_CLICK_ACTIONS', () => {
+			assert.deepStrictEqual(getContributedEnum('statusBarClickAction'), [...myExtension.STATUS_BAR_CLICK_ACTIONS]);
+		});
+
+		test('every contributed statusBarClickAction value maps to a registered command', async () => {
+			const commands = await vscode.commands.getCommands(true);
+			for (const action of getContributedEnum('statusBarClickAction')) {
+				const command = myExtension.getStatusBarClickCommand(action);
+				assert.ok(commands.includes(command), `command "${command}" for action "${action}" should be registered`);
+				if (action !== 'copyPath') {
+					assert.notStrictEqual(command, 'selection-path-copier.copyPath',
+						`action "${action}" should not silently fall back to copyPath`);
+				}
+			}
+		});
+	});
+
 	suite('Commands', () => {
 		test('Copy Path command should be registered', async () => {
 			const commands = await vscode.commands.getCommands(true);

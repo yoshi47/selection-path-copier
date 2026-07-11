@@ -6,21 +6,82 @@ import { getGitTopLevel, getGitRemoteUrl, getGitCommitHash, getDefaultBranchName
 // Re-export for backward compatibility with existing tests
 export { getDefaultBranchName, parseGithubUrl } from './gitHelper.js';
 
-const cachedConfig = {
+export type PathType = 'relative' | 'absolute';
+export type LineNumberFormat = 'github' | 'editor' | 'parentheses';
+export type CodeFormat = 'plain' | 'markdown';
+export type StatusBarDisplayMode = 'full' | 'compact' | 'iconOnly';
+export type StatusBarClickAction = 'copyPath' | 'copyPathWithCode' | 'copyGithubPermalink' | 'copyGithubPermalinkWithCode';
+export type GithubPermalinkType = 'commit' | 'branch';
+
+export const PATH_TYPES: readonly PathType[] = ['relative', 'absolute'];
+export const LINE_NUMBER_FORMATS: readonly LineNumberFormat[] = ['github', 'editor', 'parentheses'];
+export const CODE_FORMATS: readonly CodeFormat[] = ['plain', 'markdown'];
+export const STATUS_BAR_DISPLAY_MODES: readonly StatusBarDisplayMode[] = ['full', 'compact', 'iconOnly'];
+export const STATUS_BAR_CLICK_ACTIONS: readonly StatusBarClickAction[] = ['copyPath', 'copyPathWithCode', 'copyGithubPermalink', 'copyGithubPermalinkWithCode'];
+export const GITHUB_PERMALINK_TYPES: readonly GithubPermalinkType[] = ['commit', 'branch'];
+
+const cachedConfig: {
+	showStatusBarItem: boolean;
+	includeBlankLine: boolean;
+	pathType: PathType;
+	lineNumberFormat: LineNumberFormat;
+	codeFormat: CodeFormat;
+	statusBarDisplayMode: StatusBarDisplayMode;
+	statusBarClickAction: StatusBarClickAction;
+	githubPermalinkType: GithubPermalinkType;
+} = {
 	showStatusBarItem: true,
-	pathType: 'relative' as string,
-	lineNumberFormat: 'github' as string,
-	statusBarDisplayMode: 'full' as string,
-	statusBarClickAction: 'copyPath' as string,
+	includeBlankLine: true,
+	pathType: 'relative',
+	lineNumberFormat: 'github',
+	codeFormat: 'plain',
+	statusBarDisplayMode: 'full',
+	statusBarClickAction: 'copyPath',
+	githubPermalinkType: 'commit',
 };
+
+// The enum in package.json only constrains the settings UI; hand-edited
+// settings.json, Settings Sync from other versions, or programmatic updates
+// can still deliver arbitrary values at runtime.
+export function normalizeEnumSetting<T extends string>(value: unknown, allowed: readonly T[], defaultValue: T): { value: T; isValid: boolean } {
+	if (typeof value === 'string' && (allowed as readonly string[]).includes(value)) {
+		return { value: value as T, isValid: true };
+	}
+	return { value: defaultValue, isValid: false };
+}
+
+// Remembers the last invalid raw value warned about per key, so the toast
+// re-fires only when the invalid value first appears or changes — not on
+// every unrelated selection-path-copier.* config change.
+const lastWarnedInvalidValues = new Map<string, string>();
+
+function getValidatedConfig<T extends string>(config: vscode.WorkspaceConfiguration, key: string, allowed: readonly T[], defaultValue: T): T {
+	const raw = config.get(key);
+	const { value, isValid } = normalizeEnumSetting(raw, allowed, defaultValue);
+	if (!isValid) {
+		const rawJson = JSON.stringify(raw);
+		if (lastWarnedInvalidValues.get(key) !== rawJson) {
+			lastWarnedInvalidValues.set(key, rawJson);
+			const message = `Invalid value for selection-path-copier.${key}: ${rawJson}. Falling back to "${defaultValue}".`;
+			console.warn(message);
+			vscode.window.showWarningMessage(message);
+		}
+	} else {
+		lastWarnedInvalidValues.delete(key);
+	}
+	return value;
+}
 
 function refreshCachedConfig(): void {
 	const config = vscode.workspace.getConfiguration('selection-path-copier');
 	cachedConfig.showStatusBarItem = config.get<boolean>('showStatusBarItem', true);
-	cachedConfig.pathType = config.get<string>('pathType', 'relative');
-	cachedConfig.lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
-	cachedConfig.statusBarDisplayMode = config.get<string>('statusBarDisplayMode', 'full');
-	cachedConfig.statusBarClickAction = config.get<string>('statusBarClickAction', 'copyPath');
+	cachedConfig.includeBlankLine = config.get<boolean>('includeBlankLine', true);
+	cachedConfig.pathType = getValidatedConfig(config, 'pathType', PATH_TYPES, 'relative');
+	cachedConfig.lineNumberFormat = getValidatedConfig(config, 'lineNumberFormat', LINE_NUMBER_FORMATS, 'github');
+	cachedConfig.codeFormat = getValidatedConfig(config, 'codeFormat', CODE_FORMATS, 'plain');
+	cachedConfig.statusBarDisplayMode = getValidatedConfig(config, 'statusBarDisplayMode', STATUS_BAR_DISPLAY_MODES, 'full');
+	cachedConfig.statusBarClickAction = getValidatedConfig(config, 'statusBarClickAction', STATUS_BAR_CLICK_ACTIONS, 'copyPath');
+	cachedConfig.githubPermalinkType = getValidatedConfig(config, 'githubPermalinkType', GITHUB_PERMALINK_TYPES, 'commit');
 }
 
 export function getDisplayPath(document: vscode.TextDocument, pathType: string): string {
@@ -40,9 +101,9 @@ export function buildStatusBarText(fileName: string, lineReference: string, disp
 		case 'compact':
 			return lineReference ? `$(copy) ${lineReference}` : '$(copy)';
 		case 'full':
-			return `$(copy) ${fileName}${lineReference}`;
+		// Unreachable when called with cachedConfig values (validated in
+		// refreshCachedConfig); kept for direct callers passing raw strings
 		default:
-			console.warn(`Unknown statusBarDisplayMode: "${displayMode}", falling back to "full"`);
 			return `$(copy) ${fileName}${lineReference}`;
 	}
 }
@@ -56,12 +117,19 @@ export function getStatusBarClickCommand(clickAction: string): string {
 		case 'copyGithubPermalinkWithCode':
 			return 'selection-path-copier.copyGithubPermalinkWithCode';
 		case 'copyPath':
-			return 'selection-path-copier.copyPath';
+		// Unreachable when called with cachedConfig values (validated in
+		// refreshCachedConfig); kept for direct callers passing raw strings
 		default:
-			console.warn(`Unknown statusBarClickAction: "${clickAction}", falling back to "copyPath"`);
 			return 'selection-path-copier.copyPath';
 	}
 }
+
+const CLICK_ACTION_TOOLTIP_LABELS: Record<StatusBarClickAction, string> = {
+	copyPath: 'copy path',
+	copyPathWithCode: 'copy path with code',
+	copyGithubPermalink: 'copy GitHub permalink',
+	copyGithubPermalinkWithCode: 'copy GitHub permalink with code',
+};
 
 function updateStatusBarItem(statusBarItem: vscode.StatusBarItem, editor: vscode.TextEditor | undefined): void {
 	if (!editor || !cachedConfig.showStatusBarItem) {
@@ -89,7 +157,7 @@ function updateStatusBarItem(statusBarItem: vscode.StatusBarItem, editor: vscode
 
 	statusBarItem.text = buildStatusBarText(fileName, lineReference, cachedConfig.statusBarDisplayMode);
 	statusBarItem.command = getStatusBarClickCommand(cachedConfig.statusBarClickAction);
-	statusBarItem.tooltip = `${displayPath}${lineReference} — Click to copy`;
+	statusBarItem.tooltip = `${displayPath}${lineReference} — Click to ${CLICK_ACTION_TOOLTIP_LABELS[cachedConfig.statusBarClickAction]}`;
 	statusBarItem.show();
 }
 
@@ -112,10 +180,9 @@ export function activate(context: vscode.ExtensionContext) {
 		await copyGithubPermalink(true);
 	});
 
-	// Status bar item
+	// Status bar item: command/tooltip/text are owned by updateStatusBarItem,
+	// which always runs before the item is shown
 	const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-	statusBarItem.command = 'selection-path-copier.copyPath';
-	statusBarItem.tooltip = 'Click to copy path';
 
 	refreshCachedConfig();
 
@@ -189,11 +256,7 @@ async function copySelectionPath(includeCode: boolean) {
 	const selection = editor.selection;
 	const filePath = document.fileName;
 	
-	const config = vscode.workspace.getConfiguration('selection-path-copier');
-	const pathType = config.get<string>('pathType', 'relative');
-	const includeBlankLine = config.get<boolean>('includeBlankLine', true);
-	const lineNumberFormat = config.get<string>('lineNumberFormat', 'github');
-	const codeFormat = config.get<string>('codeFormat', 'plain');
+	const { pathType, includeBlankLine, lineNumberFormat, codeFormat } = cachedConfig;
 
 	const displayPath = getDisplayPath(document, pathType);
 	if (pathType === 'relative' && displayPath === document.fileName) {
@@ -283,10 +346,7 @@ async function copyGithubPermalink(includeCode: boolean) {
 		return;
 	}
 
-	const config = vscode.workspace.getConfiguration('selection-path-copier');
-	const includeBlankLine = config.get<boolean>('includeBlankLine', true);
-	const codeFormat = config.get<string>('codeFormat', 'plain');
-	const permalinkType = config.get<string>('githubPermalinkType', 'commit');
+	const { includeBlankLine, codeFormat, githubPermalinkType: permalinkType } = cachedConfig;
 
 	let ref: string;
 	if (permalinkType === 'branch') {
