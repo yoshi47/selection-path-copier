@@ -2,6 +2,19 @@
 
 All notable changes to the "Selection Path Copier" extension will be documented in this file.
 
+## [1.6.0] - 2026-07-11
+
+### Added
+- Status bar click action setting (`statusBarClickAction`) — choose which copy command runs when clicking the status bar item (thanks @vincentbel, #10):
+  - `copyPath`: Copy path with line number (default)
+  - `copyPathWithCode`: Copy path with line number and selected code
+  - `copyGithubPermalink`: Copy GitHub permalink
+  - `copyGithubPermalinkWithCode`: Copy GitHub permalink and selected code
+- Invalid enum setting values now show a visible warning notification and fall back to the default (previously logged invisibly to the extension host console)
+
+### Changed
+- Status bar tooltip now reflects the configured click action (e.g. "Click to copy GitHub permalink")
+
 ## [1.5.0] - 2026-03-25
 
 ### Added
